@@ -1,0 +1,194 @@
+---
+title: "《现代教育技术》课程学习分析工具初步应用"
+author: "ZJU-LA team"
+date: "更新时间：2020年4月8日"
+output: html_document
+---
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+&emsp;&emsp;本周我们将继续分析《现代教育技术》这门课程的讨论区内容，并向同学们提供动态的可视化网络呈现图。针对这门课程小组讨论区的内容，我们将会呈现三种可视化的分析结果：社交关系网络图、话题贡献网络图、以及认知参与网络图。您将会在不同的周次看到不同的可视化分析结果，帮助您从不同维度了解您和同伴的讨论过程，以更好地进行参与、讨论和反思。本次向您展示的是：话题贡献网络图。
+
+**可视化结果的查看说明**
+
+- 每一个圆圈、方框可以表示一个节点，本周图中的方框表示参与者，也就是参与讨论的教师或学生。圆圈表示你发表观点中涉及的主题词。您可以点击某个节点高亮显示其交互情况。
+- 图形中的箭头符号表示节点指向的方向。
+- 图形缩放：每幅图形都可以进行放大缩小的操作，将鼠标放到图形上拖动滚轮即可进行缩放。
+- 突出显示某个节点：用鼠标选择某个节点，该节点就会被突出高亮显示，其它节点默认变为灰色。
+
+
+**学习社区的话题贡献**
+
+  - 分析数据说明：数据来源于第5、6周的讨论区内容
+  - 话题贡献网络图：该图展示了论坛中参与者（包括学习者，教师）与主题关键词之间的交互情况。
+  - 彩蛋：本次节点中有一位"创意之星"，你能找到她/他吗？（如果你不是本期的彩蛋，不妨看下下文的上星策略）
+
+```{r fig.width=8,fig.height=8,SNA-PERSON-4, echo=FALSE, message=FALSE, warning=FALSE}
+# this code just for getting more insight into the learning process of course named 
+# "modern technology course " in undergraduate.
+# main function :
+#   1. prepocess the original datasets
+#   2. analysis the mainstream top frequecy topic words
+#   3. plot the key words with sna graph
+
+library(tidyverse)
+library(igraph)
+library(tidytext)
+library(jiebaR)
+library(visNetwork)
+
+##-------------------------user functions section-----------------------------##
+# customer function for delete stop words
+del_stop_word <- function(sentence){
+  # sentence should have segment
+  # the coloumn needed to del stop words should have name:word
+  wk = worker(user = '../../dataset/stop_words_dict/user.dict',stop_word ='../../dataset/stop_words_dict/stop_words.txt' )
+  sentence <- as.data.frame(segment(sentence,wk))
+  names(sentence) <- 'word'
+  sentence <- sentence %>%
+    filter(!sentence$word %in% stop_words_user$words)
+  sentence <- unique(sentence)
+  # return(sentence)
+}
+
+# generate vertex color
+generateVcolor2 <- function(vertexObjects){
+  colordataset <- c()
+  for (i in vertexObjects) {
+    if(i<=12)
+      red <- max(255-i*20,0)
+    else
+      red <- i
+    cr <- rgb(red=red,green=125,blue=125,max=255)
+    colordataset <- append(colordataset,cr)
+  }
+  return(colordataset)
+}
+##-------------------------user functions section-----------------------------##
+wk3 = worker('keywords',topn = 6,user = 'stop_words_dict/user.dict',stop_word = 'stop_words_dict/stop_words.txt')
+
+# load dataset
+original_data <- read.csv('dataset/g3_0408.csv',header = FALSE)
+names(original_data) <- c('V1','V2','COMMENT_TYPE','TOPIC','COMMENT_TIME','STU_NAME','STU_ID','ROLE','COMMENT_CONTENT')
+original_data <- as_tibble(original_data)
+original_data <- original_data[2:length(original_data$V1),1:9] # delete thr first row
+
+# 将学生的真实姓名对应到V1，V2列上
+# post to others
+starter <- original_data[,c('V1','STU_NAME')]
+# receive comment by others
+receiver <- as_tibble(original_data$V2)
+names(starter) <- c('ID','RECEVIE_NAME')
+names(receiver) <- c('ID')
+m <- left_join(receiver,starter,by='ID')
+names(m) <- c('V2','RECEVIE_NAME')
+original_data2 <- original_data %>%
+  mutate('RECEVIE_NAME'=m$RECEVIE_NAME)%>%
+  filter(!is.na(RECEVIE_NAME))%>%
+  filter(str_detect(TOPIC,'第五周') | str_detect(TOPIC,'第六周'))%>%
+  select('STU_NAME','RECEVIE_NAME','COMMENT_CONTENT')
+original_data2$COMMENT_CONTENT <- as.character(original_data2$COMMENT_CONTENT)
+
+
+keywords_data <- NULL
+for (i in 1:length(original_data2$COMMENT_CONTENT)) {
+  kw <- as.character(keywords(original_data2$COMMENT_CONTENT[i],wk3))
+  kw <- as.data.frame(kw)
+  kw_cross_data <- cbind(original_data2$STU_NAME[i],kw)
+  keywords_data <- rbind(keywords_data,kw_cross_data)
+}
+
+# delete empty row
+keywords_data <- keywords_data%>%
+  filter(!is.na(kw))%>%
+  filter(nchar(as.character(kw))>1)
+
+graph_topic_data <- graph_from_data_frame(keywords_data)
+vis_topic_data <- toVisNetworkData(graph_topic_data)
+
+frequency_stu <- as.integer(degree(graph_topic_data,mode = 'all'))
+concat <- function(concat_object){
+  paste("用词频率",concat_object,sep = ':')
+}
+freq<- sapply(frequency_stu, concat)
+
+# 更新自动生成创意之星的功能 04-01
+star_score <- data.frame(label=vis_topic_data$nodes$label,score=degree(graph_topic_data))
+topic_star <- star_score%>%
+  filter(label %in% original_data$STU_NAME)%>%
+  arrange(desc(score))
+
+vis_topic_data$nodes$color <- generateVcolor2(as.integer(degree(graph_topic_data)))
+vis_topic_data$nodes$info <- freq
+vis_topic_data$nodes$label_long <- vis_topic_data$nodes$label
+vis_topic_data$nodes$star <- topic_star$label[1]
+
+vis_topic_data$nodes <- vis_topic_data$nodes %>%
+  mutate(group = ifelse(label %in% original_data2$STU_NAME,'STU','WD'))
+
+# define edges' label
+vis_topic_data$edges$label <- c('')
+visNetwork(vis_topic_data$nodes,vis_topic_data$edges)%>%
+  visGroups(groupname = 'STU', shape='square')%>%
+  visGroups(groupname = 'WD',shape='circle')%>%
+  visEdges(arrows = list(to = list(enabled = TRUE, scaleFactor = 1, type = 'arrow')))%>%
+  visOptions(highlightNearest = list(degree=1,hover=T),nodesIdSelection = TRUE)%>%
+  visInteraction(hover = T,hideEdgesOnDrag = T,navigationButtons = T) %>%
+  visEvents(hoverNode  = "function(e){
+            var label_info = this.body.data.nodes.get({
+            fields: ['label', 'label_long','info','star'],
+            filter: function (item) {
+            return item.id === e.node
+            },
+            returnType :'Array'
+            });
+            
+            if(e.node == label_info[0].star){
+              this.body.data.nodes.update({id: e.node, 
+              label:label_info[0].info + '\\n 创意之星',
+              color:'gold'
+            });
+            }else{
+            this.body.data.nodes.update({id: e.node, 
+              label:label_info[0].info
+            });}
+            
+            }") %>%
+  visEvents(blurNode  = "function(e){
+            var label_info = this.body.data.nodes.get({
+            fields: ['label', 'label_long','info'],
+            filter: function (item) {
+            return item.id === e.node
+            },
+            returnType :'Array'
+            });
+            this.body.data.nodes.update({id: e.node, label:label_info[0].label_long});
+  }")
+```
+
+
+**上星策略**
+
+社交网络分析 | 话题发展网络 |  认知参与网络  
+-|-|-
+人气之星 | 创意之星 | 内涵达人 |
+在整个学习社区中人气最旺 | 创意性思考，观点贴合主题，又拓展外延 | 发言既有质量又有内涵 |
+策略1：参与主题回复 | 策略1：参与主题回复 | 策略1：参与主题回复 |
+策略2：积极进行同伴交互 | 策略2：尽可能用专业术语表达观点 |策略2：高质量参与讨论：不仅有观点、理论，还有具体的数据、个人经验等论据支持观点 |
+策略3：自由表达不同观点，并与不同观点进行讨论 |策略3：不仅阐述自己的观点，更对自己的观点进行发散性思考，注重拓展观点的外延（使用类比等方式阐述）|策略3：高质量评阅他人观点：评阅他人观点，辩驳有理有据，反驳时尽可能提供论据支撑你的意见|
+
+
+**反馈**
+
+亲爱的各位同学，希望我们提供可视化分析结果能为您的学习过程提供帮助：
+
+- 自由表达观点，也许你的观点与众不同，但我们深信在一个平等协作的学习社区，学习同伴之间的自由表达可以促进知识的深层建构。
+- 建立学习网络，你要做的不仅是老师发布的主题帖，还可以查看其它同伴的帖子，进行评论，促进你建立更加丰富的社交网络拓扑。
+- 如果你在学习和使用过程中有什么疑问或建议，欢迎联系课程的助教团队。
+<hr>
+<center>Copyright © 2020《现代教育技术》课程团队(团队成员：欧阳璠、孙丹、李旭)保留所有权利。️</center>
+

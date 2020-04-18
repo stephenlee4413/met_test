@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="ZJU-LA team" />
+
+
+<title>《现代教育技术》课程学习分析工具初步应用</title>
+
+<script src="p3_sna_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="p3_sna_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="p3_sna_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="p3_sna_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="p3_sna_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="p3_sna_files/navigation-1.1/tabsets.js"></script>
+<link href="p3_sna_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="p3_sna_files/highlightjs-9.12.0/highlight.js"></script>
+<script src="p3_sna_files/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<link href="p3_sna_files/vis-4.20.1/vis.css" rel="stylesheet" />
+<script src="p3_sna_files/vis-4.20.1/vis.min.js"></script>
+<script src="p3_sna_files/visNetwork-binding-2.0.8/visNetwork.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">《现代教育技术》课程学习分析工具初步应用</h1>
+<h4 class="author">ZJU-LA team</h4>
+<h4 class="date">更新时间：2020年4月15日</h4>
+
+</div>
+
+
+<hr />
+<p>  本周我们将继续分析《现代教育技术》这门课程的讨论区内容，并向同学们提供动态的可视化网络呈现图。针对这门课程小组讨论区的内容，我们将会呈现三种可视化的分析结果：社交关系网络图、话题贡献网络图、以及认知参与网络图。您将会在不同的周次看到不同的可视化分析结果，帮助您从不同维度了解您和同伴的讨论过程，以更好地进行参与、讨论和反思。本次向您展示的是：社交关系网络图。</p>
+<p><strong>可视化结果的查看说明</strong></p>
+<ul>
+<li>每一个圆圈可以表示一个节点，本周图中的节点表示参与者，也就是参与讨论的教师或学生。您可以点击某个节点高亮显示某位参与者的交互情况。</li>
+<li>图形中的箭头符号表示节点指向的方向。例如本周图中方向表示具体是哪位学习者回复了箭头所指向的另一个学习者。</li>
+<li>图形缩放：每幅图形都可以进行放大缩小的操作，将鼠标放到图形上拖动滚轮即可进行缩放。</li>
+<li>突出显示某个节点：用鼠标选择某个节点，该节点就会被突出高亮显示，其它节点默认变为灰色。</li>
+</ul>
+<p><strong>学习社区的社交关系</strong></p>
+<ul>
+<li>分析数据说明：数据来源于第7周的讨论区内容</li>
+<li>社交网络关系图：该图展示了论坛中参与者（包括学习者，教师）之间的学习社区交互情况。</li>
+<li>彩蛋：本次节点中有一位“人气之星”，你能找到她/他吗？（如果你不是本期的彩蛋，不妨看下下文的上星策略）</li>
+</ul>
+<div id="htmlwidget-f11cc5f86f0387dfe7bd" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f11cc5f86f0387dfe7bd">{"x":{"nodes":{"id":["林订含","李维妙","吴上好","吴冕","郭江婷","欧阳璠"],"label":["林订含","李维妙","吴上好","吴冕","郭江婷","欧阳璠"],"color":["#EB7D7D","#877D7D","#AF7D7D","#D77D7D","#D77D7D","#9B7D7D"],"info":["交互频率:1","交互频率:6","交互频率:4","交互频率:2","交互频率:2","交互频率:5"],"label_long":["林订含","李维妙","吴上好","吴冕","郭江婷","欧阳璠"],"rank_degree":[1,6,4,2,2,5],"star":["李维妙","李维妙","李维妙","李维妙","李维妙","李维妙"]},"edges":{"from":["林订含","李维妙","吴上好","李维妙","吴冕","李维妙","郭江婷","吴上好","吴上好","李维妙"],"to":["欧阳璠","欧阳璠","李维妙","李维妙","欧阳璠","吴冕","欧阳璠","郭江婷","欧阳璠","吴上好"],"label":["","","","","","","","","",""]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"edges":{"arrows":{"to":{"enabled":true,"scaleFactor":1,"type":"arrow"}}},"interaction":{"hideEdgesOnDrag":true,"hover":true,"navigationButtons":true}},"groups":null,"width":null,"height":null,"idselection":{"enabled":true,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)"},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","highlight":{"enabled":false,"hoverNearest":true,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);","events":{"hoverNode":"function(e,star){\n            var label_info = this.body.data.nodes.get({\n            fields: ['label', 'label_long','info','star'],\n            filter: function (item) {\n            return item.id === e.node\n            },\n            returnType :'Array'\n            });\n            \n            if(e.node == label_info[0].star){\n              this.body.data.nodes.update({id: e.node, \n              label:label_info[0].info + '\\n 人气之星',\n              color:'gold'\n            });\n            }else{\n            this.body.data.nodes.update({id: e.node, \n              label:label_info[0].info\n            });}\n            \n            }","blurNode":"function(e){\n            var label_info = this.body.data.nodes.get({\n            fields: ['label', 'label_long','info'],\n            filter: function (item) {\n            return item.id === e.node\n            },\n            returnType :'Array'\n            });\n            this.body.data.nodes.update({id: e.node, label:label_info[0].label_long});\n  }"}},"evals":["events.hoverNode","events.blurNode"],"jsHooks":[]}</script>
+<p><strong>上星策略</strong></p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>社交网络分析</th>
+<th>话题发展网络</th>
+<th>认知参与网络</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>人气之星</td>
+<td>创意之星</td>
+<td>内涵达人</td>
+</tr>
+<tr class="even">
+<td>在整个学习社区中人气最旺</td>
+<td>创意性思考，观点贴合主题，又拓展外延</td>
+<td>发言既有质量又有内涵</td>
+</tr>
+<tr class="odd">
+<td>策略1：参与主题回复</td>
+<td>策略1：参与主题回复</td>
+<td>策略1：参与主题回复</td>
+</tr>
+<tr class="even">
+<td>策略2：积极进行同伴交互</td>
+<td>策略2：尽可能用专业术语表达观点</td>
+<td>策略2：高质量参与讨论：不仅有观点、理论，还有具体的数据、个人经验等论据支持观点</td>
+</tr>
+<tr class="odd">
+<td>策略3：自由表达不同观点，并与不同观点进行讨论</td>
+<td>策略3：不仅阐述自己的观点，更对自己的观点进行发散性思考，注重拓展观点的外延（使用类比等方式阐述）</td>
+<td>策略3：高质量评阅他人观点：评阅他人观点，辩驳有理有据，反驳时尽可能提供论据支撑你的意见</td>
+</tr>
+</tbody>
+</table>
+<p><strong>反馈</strong></p>
+<p>亲爱的各位同学，希望我们提供可视化分析结果能为您的学习过程提供帮助：</p>
+<ul>
+<li>自由表达观点，也许你的观点与众不同，但我们深信在一个平等协作的学习社区，学习同伴之间的自由表达可以促进知识的深层建构。</li>
+<li>建立学习网络，你要做的不仅是老师发布的主题帖，还可以查看其它同伴的帖子，进行评论，促进你建立更加丰富的社交网络拓扑。</li>
+<li>如果你在学习和使用过程中有什么疑问或建议，欢迎联系课程的助教团队。
+<hr>
+<center>
+Copyright © 2020《现代教育技术》课程团队(团队成员：欧阳璠、孙丹、李旭)保留所有权利。️
+</center></li>
+</ul>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
